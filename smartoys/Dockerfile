@@ -157,7 +157,7 @@ RUN a2enmod setenvif \
 
 RUN mkdir -p /var/www/bootstrap
 
-COPY bin/* /usr/bin/
+#COPY bin/* /usr/bin/
 RUN chmod +x -R /usr/bin/*
 RUN chmod +x -R /usr/bin/
 

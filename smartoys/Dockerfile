@@ -155,8 +155,6 @@ RUN a2enmod setenvif \
   include \
   ext_filter
 
-COPY build.txt  /var/www/build.txt
-
 RUN mkdir -p /var/www/bootstrap
 
 COPY bin/* /usr/bin/
@@ -165,9 +163,9 @@ RUN chmod +x -R /usr/bin/
 
 RUN rm /etc/cron.d/mautic
 
-COPY powertic.crontab /etc/cron.d/powertic
+COPY smartoys.crontab /etc/cron.d/smartoys
 
-RUN chmod 644 /etc/cron.d/powertic
+RUN chmod 644 /etc/cron.d/smartoys
 
 COPY docker-entrypoint.sh /entrypoint.sh
 

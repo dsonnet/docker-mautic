@@ -26,14 +26,6 @@ ENV PHP_MAX_EXECUTION_TIME=300
 
 RUN chmod -R +777 /tmp
 
-RUN apt-get update
-RUN apt-get dist-upgrade -y
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install python-software-properties
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install software-properties-common
-RUN add-apt-repository ppa:maxmind/ppa
-
 RUN apt-get update && apt-get upgrade -y && apt-get install -q -y \
   ca-certificates \
   build-essential  \
@@ -58,7 +50,6 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -q -y \
   cron \
   bzip2 \
   tidy \
-  geoipupdate \
   sysvbanner \
   wget \
   htop \
@@ -113,6 +104,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -q -y \
   && rm -rf /var/lib/apt/lists/* \
   && sudo apt-get clean
 
+
+
 RUN pip install awscli
 
 RUN docker-php-source extract \
@@ -136,6 +129,27 @@ RUN docker-php-source extract \
 
 RUN mkdir -p $COMPOSER_HOME \
   && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Install GeoIP PHP extension.
+RUN apt-get update \
+    && apt-get install -y  libgeoip-dev wget \
+    && rm -rf /var/lib/apt/lists/* \
+    && pecl install geoip-1.1.1 \
+    && docker-php-ext-enable geoip
+
+# Install GeoIPUpdate.
+RUN apt-get update \
+    && apt-get install -y automake autoconf libtool \
+    && cd /tmp \
+    && wget https://github.com/maxmind/geoipupdate/archive/master.tar.gz \
+    && tar -xzf master.tar.gz \
+    && cd geoipupdate-master \
+    && ./bootstrap \
+    && ./configure \
+    && make \
+    && make install \
+    && apt-get purge --auto-remove -y automake autoconf libtool \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN { \
   echo 'opcache.memory_consumption=4096M'; \

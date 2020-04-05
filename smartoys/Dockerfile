@@ -141,8 +141,8 @@ RUN apt-get update \
 RUN apt-get update \
     && apt-get install -y automake autoconf libtool \
     && cd /tmp \
-    && wget https://github.com/maxmind/geoipupdate/archive/master.tar.gz \
-    && tar -xzf master.tar.gz \
+    && wget https://github.com/maxmind/geoipupdate/releases/download/v3.1.0/geoipupdate-3.1.0.tar.gz \
+    && tar -xzf geoipupdate-3.1.0.tar.gz \
     && cd geoipupdate-master \
     && ./bootstrap \
     && ./configure \

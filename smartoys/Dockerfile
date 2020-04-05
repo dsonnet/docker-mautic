@@ -26,6 +26,8 @@ ENV PHP_MAX_EXECUTION_TIME=300
 
 RUN chmod -R +777 /tmp
 
+RUN add-apt-repository ppa:maxmind/ppa
+
 RUN apt-get update && apt-get upgrade -y && apt-get install -q -y \
   ca-certificates \
   build-essential  \
@@ -50,6 +52,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -q -y \
   cron \
   bzip2 \
   tidy \
+  geoipupdate \
   sysvbanner \
   wget \
   htop \

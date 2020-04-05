@@ -4,6 +4,20 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 */2 * * * * root  chmod -R +777 /var/www/app/logs
 */2 * * * * root  chmod -R +777 /var/www/app/cache
 * 1 * * *   root  service cron reload
+8,23,38,52 * * * *     www-data   php /var/www/html/app/console mautic:segments:update > /var/log/cron.pipe 2>&1
+       */5 * * * *     www-data   php /var/www/html/app/console mautic:import > /var/log/cron.pipe 2>&1
+5,20,35,50 * * * *     www-data   php /var/www/html/app/console mautic:campaigns:rebuild > /var/log/cron.pipe 2>&1
+2,17,32,47 * * * *     www-data   php /var/www/html/app/console mautic:campaigns:trigger > /var/log/cron.pipe 2>&1
+0,15,30,45 * * * *     www-data   php /var/www/html/app/console mautic:messages:send > /var/log/cron.pipe 2>&1
+0,15,30,45 * * * *     www-data   php /var/www/html/app/console mautic:emails:send > /var/log/cron.pipe 2>&1
+0,15,30,45 * * * *     www-data   php /var/www/html/app/console mautic:email:fetch > /var/log/cron.pipe 2>&1
+0,15,30,45 * * * *     www-data   php /var/www/html/app/console mautic:social:monitoring > /var/log/cron.pipe 2>&1
+0,15,30,45 * * * *     www-data   php /var/www/html/app/console mautic:webhooks:process > /var/log/cron.pipe 2>&1
+0,15,30,45 * * * *     www-data   php /var/www/html/app/console mautic:broadcasts:send > /var/log/cron.pipe 2>&1
+         * 1 * * *     www-data   php /var/www/html/app/console mautic:maintenance:cleanup --days-old=365 > /var/log/cron.pipe 2>&1
+       */5 * * * *     www-data   php /var/www/html/app/console mautic:reports:scheduler > /var/log/cron.pipe 2>&1
+        0 5 10 * *     www-data   php /var/www/html/app/console mautic:unusedip:delete > /var/log/cron.pipe 2>&1
+
 0,15,30,45 * * * *     www-data   php /var/www/html/app/console mautic:queue:process --env=prod -i page_hit > /var/log/cron.pipe 2>&1
 0,15,30,45 * * * *     www-data   php /var/www/html/app/console mautic:queue:process --env=prod -i email_hit > /var/log/cron.pipe 2>&1
-
+11 3 * * * sudo -u daemon geoipupdate -f /etc/GeoIP.conf -d /var/www/html/app/cache/ip_data > /var/log/cron.pipe 2>&1

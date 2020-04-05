@@ -20,4 +20,4 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 0,15,30,45 * * * *     www-data   php /var/www/html/app/console mautic:queue:process --env=prod -i page_hit > /var/log/cron.pipe 2>&1
 0,15,30,45 * * * *     www-data   php /var/www/html/app/console mautic:queue:process --env=prod -i email_hit > /var/log/cron.pipe 2>&1
-11 3 * * * sudo -u daemon geoipupdate -f /etc/GeoIP.conf -d /var/www/html/app/cache/ip_data > /var/log/cron.pipe 2>&1
+11 3 * * * sudo -u www-data geoipupdate -f /etc/GeoIP.conf -d /var/www/html/app/cache/ip_data > /var/log/cron.pipe 2>&1

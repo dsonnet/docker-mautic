@@ -143,7 +143,7 @@ RUN apt-get update \
     && cd /tmp \
     && wget https://github.com/maxmind/geoipupdate/releases/download/v3.1.0/geoipupdate-3.1.0.tar.gz \
     && tar -xzf geoipupdate-3.1.0.tar.gz \
-    && cd geoipupdate-master \
+    && cd geoipupdate-3.1.0 \
     && ./bootstrap \
     && ./configure \
     && make \

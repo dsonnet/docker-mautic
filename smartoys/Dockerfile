@@ -26,6 +26,12 @@ ENV PHP_MAX_EXECUTION_TIME=300
 
 RUN chmod -R +777 /tmp
 
+RUN apt-get update
+RUN apt-get dist-upgrade -y
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install python-software-properties
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install software-properties-common
 RUN add-apt-repository ppa:maxmind/ppa
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -q -y \

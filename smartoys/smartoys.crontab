@@ -1,9 +1,6 @@
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-*/2 * * * * root  chmod -R +777 /var/www/app/logs
-*/2 * * * * root  chmod -R +777 /var/www/app/cache
-* 1 * * *   root  service cron reload
 8,23,38,52 * * * *     www-data   php /var/www/html/app/console mautic:segments:update > /var/log/cron.pipe 2>&1
        */5 * * * *     www-data   php /var/www/html/app/console mautic:import > /var/log/cron.pipe 2>&1
 5,20,35,50 * * * *     www-data   php /var/www/html/app/console mautic:campaigns:rebuild > /var/log/cron.pipe 2>&1

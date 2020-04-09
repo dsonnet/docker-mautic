@@ -160,6 +160,12 @@ RUN { \
   echo 'opcache.enable_cli=1'; \
   echo 'expose_php = Off'; \
   echo 'file_uploads = On'; \
+  echo 'date.timezone = "Europe/Brussels"'; \
+  echo 'always_populate_raw_post_data = -1'; \
+  echo 'memory_limit = 512M'; \
+  echo 'upload_max_filesize = 128M'; \
+  echo 'post_max_size = 128M'; \  
+  echo 'max_execution_time = 300'; \    
   } > /usr/local/etc/php/conf.d/powertic.ini
 
 #RUN printf "no\n" | pecl install apcu

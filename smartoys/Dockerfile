@@ -196,6 +196,8 @@ COPY smartoys.crontab /etc/cron.d/smartoys
 
 RUN chmod 644 /etc/cron.d/smartoys
 
+RUN alias console='sudo -Hu www-data php app/console'
+
 COPY docker-entrypoint.sh /entrypoint.sh
 
 EXPOSE 80

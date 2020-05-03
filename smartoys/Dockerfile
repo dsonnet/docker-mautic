@@ -191,10 +191,18 @@ RUN chmod +x -R /usr/bin/*
 RUN chmod +x -R /usr/bin/
 
 RUN rm /etc/cron.d/mautic
+RUN rm /etc/crontab
 
-COPY smartoys.crontab /etc/cron.d/smartoys
+COPY smartoys.crontab /etc/crontab
 
-RUN chmod 644 /etc/cron.d/smartoys
+RUN chmod 644 /etc/crontab
+
+# RUN crontab /etc/crontab
+
+# Create the log file to be able to run tail
+RUN touch /var/log/cron.log
+RUN chmod 777 /var/log/cron.log
+
 
 RUN alias console='sudo -Hu www-data php app/console'
 

@@ -15,7 +15,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 0,15,30,45 * * * *	www-data   php /var/www/html/app/console mautic:social:monitoring > /var/log/cron.pipe 2>&1
 0,15,30,45 * * * *	www-data   php /var/www/html/app/console mautic:webhooks:process > /var/log/cron.pipe 2>&1
 0,15,30,45 * * * *	www-data   php /var/www/html/app/console mautic:broadcasts:send > /var/log/cron.pipe 2>&1
-         * 1 * * *	www-data   php /var/www/html/app/console mautic:maintenance:cleanup --days-old=365 > /var/log/cron.pipe 2>&1
+         * 1 * * *	www-data   php /var/www/html/app/console mautic:maintenance:cleanup --days-old=60 --gdpr -n > /var/log/cron.pipe 2>&1
          * 1 * * *	www-data   nohup php /var/www/html/app/console mautic:queue:process --env=prod -i page_hit > /dev/null 2>&1 &
          * 1 * * *	www-data   nohup php /var/www/html/app/console mautic:queue:process --env=prod -i email_hit > /dev/null 2>&1 &		 
        */5 * * * *	www-data   php /var/www/html/app/console mautic:reports:scheduler > /var/log/cron.pipe 2>&1

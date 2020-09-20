@@ -1,0 +1,12 @@
+delete FROM mautic_lead_donotcontact 
+WHERE comments like '553 5.3.0 message rejected: 167.89.100.226%'
+or comments like '550 5.7.1 Unfortunately, messages from [167.89.100.243]%'
+or comments like 'Email was deferred due to the following reason(s): [IPs were throttled by recipient server]'
+or comments like 'Email was deferred due to the following reason(s): [IPs reached ISP-suggested hourly limits%'
+or comments like '554 5.7.1 Service unavailable; Client host [167.89.100.226] blocked using bl.spamcop.net; Blocked%'
+or comments like '550 spamcop.mimecast.org Blocked - see http://www.spamcop.net/bl.shtml?167.89.100.226%'
+or comments like '552 5.2.2 The email account that you tried to reach is over quota. Please direct the recipient to ht%'
+or comments like '521 5.2.1 Le compte emetteur bloque. The sender account is blocked.%'
+or comments like '421  charles.telenet-ops.be bizsmtp 167.89.100.226 sorry, you have temporarily been blacklisted%'
+or comments like '451 too many errors detected from your IP (50.31.63.254), please visit http://postmaster.free.fr/%'
+or comments like 'Spam Reporting Address%'

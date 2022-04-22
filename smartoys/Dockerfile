@@ -1,4 +1,4 @@
-FROM mautic/mautic:apache
+FROM php:7.2-apache
 
 LABEL name="Luiz Eduardo Oliveira Fonseca"
 LABEL version="201912180545"

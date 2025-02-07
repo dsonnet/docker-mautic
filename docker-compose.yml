@@ -1,3 +1,5 @@
+version: '3'
+
 x-mautic-volumes:
   &mautic-volumes
   - ./mautic/config:/var/www/html/config:z
@@ -25,15 +27,23 @@ services:
     networks:
       - default
 
+  rabbitmq:
+    image: rabbitmq:3
+    environment:
+      - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST}
+    volumes: 
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - default
+
   mautic_web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: mautic/mautic:5-apache
     links:
       - db:mysql
     ports:
-      - ${MAUTIC_PORT:-8001}:80
+      - 8003:80
     volumes: *mautic-volumes
+
     environment:
       - DOCKER_MAUTIC_LOAD_TEST_DATA=${DOCKER_MAUTIC_LOAD_TEST_DATA}
       - DOCKER_MAUTIC_RUN_MIGRATIONS=${DOCKER_MAUTIC_RUN_MIGRATIONS}
@@ -52,26 +62,22 @@ services:
       - default
 
   mautic_cron:
-      build:
-        context: .
-        dockerfile: Dockerfile
-      links:
-        - db:mysql
-      volumes: *mautic-volumes
-      environment:
-        - DOCKER_MAUTIC_ROLE=mautic_cron
-      env_file:
-        - .mautic_env
-      depends_on:
-        mautic_web:
-          condition: service_healthy
-      networks:
-        - default
+    image: mautic/mautic:5-apache
+    links:
+      - db:mysql
+    volumes: *mautic-volumes
+    environment:
+      - DOCKER_MAUTIC_ROLE=mautic_cron
+    env_file:
+      - .mautic_env
+    depends_on:
+      mautic_web:
+        condition: service_healthy
+    networks:
+      - default
 
   mautic_worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: mautic/mautic:5-apache
     links:
       - db:mysql
     volumes: *mautic-volumes
@@ -84,11 +90,10 @@ services:
         condition: service_healthy
     networks:
       - default
-    deploy:
-      replicas: 1
 
 volumes:
   mysql-data:
+  rabbitmq-data:
 
 networks:
   default:

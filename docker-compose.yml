@@ -10,7 +10,7 @@ x-mautic-volumes:
 
 services:
   db:
-    image: mysql:8.0
+    image: mysql:8.0.41
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
@@ -37,7 +37,7 @@ services:
       - default
 
   mautic_web:
-    image: mautic/mautic:5-apache
+    image: mautic/mautic:5.2.1-apache
     links:
       - db:mysql
     ports:

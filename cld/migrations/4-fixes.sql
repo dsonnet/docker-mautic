@@ -1,2 +1,4 @@
 ALTER TABLE emails
 ADD COLUMN preheader_text VARCHAR(191) DEFAULT NULL;
+
+

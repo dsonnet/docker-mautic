@@ -6,6 +6,26 @@ FROM information_schema.TABLES
 WHERE TABLE_SCHEMA = 'cld'
   AND TABLE_COLLATION NOT LIKE 'utf8mb4%';
 
+  SELECT 
+    CONCAT(
+        'ALTER TABLE `', TABLE_NAME, '` MODIFY `', COLUMN_NAME, '` ',
+        COLUMN_TYPE, 
+        ' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci',
+        CASE WHEN IS_NULLABLE = 'NO' THEN ' NOT NULL' ELSE '' END,
+        -- Preserve DEFAULT if it exists
+        IF(COLUMN_DEFAULT IS NOT NULL, CONCAT(' DEFAULT ', QUOTE(COLUMN_DEFAULT)), ''),
+        -- Preserve extra attributes if needed (e.g., auto_increment)
+        -- Not usually relevant for text columns, but can be appended if needed
+        ';'
+    ) AS alter_statement
+FROM information_schema.columns
+WHERE TABLE_SCHEMA = 'mailing'
+  AND CHARACTER_SET_NAME IS NOT NULL
+  AND CHARACTER_SET_NAME <> 'utf8mb4'
+  -- Only change textual data types (char, varchar, text, etc.)
+  AND DATA_TYPE IN ('char','varchar','text','longtext','mediumtext','tinytext','enum','set');
+
+
 
 ALTER DATABASE cld CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 

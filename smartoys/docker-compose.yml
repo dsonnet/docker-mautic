@@ -19,10 +19,7 @@ services:
     restart: always
 
   mauticdb:
-    image: percona/percona-server:5.7
-    configs:
-      - source: mysqldv3.cnf
-        target: /etc/percona-server.conf.d/mysqld.cnf
+    image: mysql:8.0
     hostname: mauticdb
     volumes:
       - mysql_data:/var/lib/mysql
@@ -40,7 +37,9 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=g9uL5mCWTk1YIq92
     command:
-      --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+      - --slow_query_log=1
+      - --slow_query_log_file=/dev/stdout
+      - --long_query_time=1   
     networks:
       - mautic-net
 

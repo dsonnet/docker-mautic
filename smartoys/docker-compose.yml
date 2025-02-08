@@ -1,5 +1,9 @@
-version: '3.7'
-
+x-mautic-volumes: &mautic-volumes
+  - ./mautic/config:/var/www/html/config:z
+  - ./mautic/logs:/var/www/html/var/logs:z
+  - ./mautic/media/files:/var/www/html/docroot/media/files:z
+  - ./mautic/media/images:/var/www/html/docroot/media/images:z
+  - ./cron:/opt/mautic/cron:z
 services:
 
   smtprelay:
@@ -44,16 +48,20 @@ services:
     networks:
       - mautic-net
 
-  mautic:
-    image: mautic/mautic:v4
+  mautic_smartoys:
+    image: mautic/mautic:5.2.1-apache
     hostname: mautic
     links:
       - mauticdb:mysql
     depends_on:
       - mauticdb
       - smtprelay
-    volumes:
-      - mautic_data:/var/www/html
+    volumes: 
+      - mautic_smartoys_config:/var/www/html/config
+      - mautic_smartoys_logs:/var/www/html/var/logs
+      - mautic_smartoys_files:/var/www/html/docroot/media/files
+      - mautic_smartoys_images:/var/www/html/docroot/media/images
+      - mautic_smartoys_cron:/opt/mautic/cron
     deploy:
       mode: global
       placement:
@@ -194,6 +202,8 @@ services:
     # external network for reverse proxy
       - traefik-public
 
+
+
 volumes:
   mysql_data:
     driver: local
@@ -211,6 +221,17 @@ volumes:
     driver: local
   mautic_opendkim_keys_gameo:
     driver: local
+  # Subfolders for "mautic_smartoys"
+  mautic_smartoys_config:
+    driver: local
+  mautic_smartoys_logs:
+    driver: local
+  mautic_smartoys_files:
+    driver: local
+  mautic_smartoys_images:
+    driver: local
+  mautic_smartoys_cron:
+    driver: local    
 configs:
   mysqldv3.cnf:
     external: true

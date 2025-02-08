@@ -16,6 +16,8 @@ PHP_MAX_EXECUTION_TIME=3600
 PHP_LOG_ERRORS="ON"
 PHP_ERROR_LOG="/dev/stdout"
 
+SITE_URL="mailing.cld.eu"
+
 MAILER_FROM_NAME="Cld Distribution"
 MAILER_FROM_EMAIL="newsletter@cld.eu"
 MAILER_TRANSPORT="smtp"

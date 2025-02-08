@@ -1,5 +1,9 @@
 
 clean tables
+ - encoding
+ - table size
+ - optimise
+ 
 add events
 
 add config of smtprelay into docker

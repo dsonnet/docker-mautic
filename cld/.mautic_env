@@ -16,11 +16,11 @@ PHP_MAX_EXECUTION_TIME=3600
 PHP_LOG_ERRORS="ON"
 PHP_ERROR_LOG="/dev/stdout"
 
-SITE_URL="mailing.cld.eu"
+MAUTIC_SITE_URL="https://mailing.cld.eu"
 
-MAILER_FROM_NAME="Cld Distribution"
-MAILER_FROM_EMAIL="newsletter@cld.eu"
-MAILER_TRANSPORT="smtp"
-MAILER_HOST="smtprelay"
-MAILER_PORT=25
+MAUTIC_MAILER_FROM_NAME="Cld Distribution"
+MAUTIC_MAILER_FROM_EMAIL="newsletter@cld.eu"
+MAUTIC_MAILER_TRANSPORT="smtp"
+MAUTIC_MAILER_HOST="smtprelay"
+MAUTIC_MAILER_PORT=25
 

@@ -13,9 +13,8 @@ services:
     hostname: mauticsmtp
     environment:
       - POSTFIX_MYHOSTNAME=mailing.smartoys.be
-      - OPENDKIM_DOMAINS=${OPENDKIM_DOMAINS}
     env_file:
-      - .mautic_env      
+      - .smtp_env      
     volumes:
       - smtprelay-data:/etc/opendkim/keys
     networks:

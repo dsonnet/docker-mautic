@@ -1,3 +1,12 @@
+SELECT CONCAT(
+         'ALTER TABLE `', TABLE_SCHEMA, '`.`', TABLE_NAME, 
+         '` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;'
+       ) AS alter_statement
+FROM information_schema.TABLES
+WHERE TABLE_SCHEMA = 'cld'
+  AND TABLE_COLLATION NOT LIKE 'utf8mb4%';
+
+
 ALTER DATABASE cld CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 ALTER TABLE `cld`.`mautic_asset_downloads` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

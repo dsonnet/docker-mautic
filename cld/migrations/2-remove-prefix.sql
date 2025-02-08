@@ -1,3 +1,5 @@
+
+
 RENAME TABLE `cld`.`mautic_asset_downloads` TO `cld`.`asset_downloads`;
 RENAME TABLE `cld`.`mautic_assets` TO `cld`.`assets`;
 RENAME TABLE `cld`.`mautic_audit_log` TO `cld`.`audit_log`;

@@ -41,7 +41,7 @@ services:
     links:
       - db:mysql
     ports:
-      - 8003:80
+      - ${WEBPORT}:80
     volumes: *mautic-volumes
 
     environment:

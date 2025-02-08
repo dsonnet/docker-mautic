@@ -15,7 +15,7 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes: 
-      - mysql-data:/var/lib/mysql
+      - ${COMPOSE_PROJECT_NAME}-mysql-data:/var/lib/mysql
     ports:
       - 3306:3306      
     healthcheck:
@@ -32,7 +32,7 @@ services:
     environment:
       - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST}
     volumes: 
-      - rabbitmq-data:/var/lib/rabbitmq
+      - ${COMPOSE_PROJECT_NAME}-rabbitmq-data:/var/lib/rabbitmq
     networks:
       - default
 
@@ -41,7 +41,7 @@ services:
     links:
       - db:mysql
     ports:
-      - 8003:80
+      - 8004:80
     volumes: *mautic-volumes
 
     environment:
@@ -92,9 +92,9 @@ services:
       - default
 
 volumes:
-  mysql-data:
-  rabbitmq-data:
+  ${COMPOSE_PROJECT_NAME}-mysql-data:
+  ${COMPOSE_PROJECT_NAME}-rabbitmq-data:
 
 networks:
   default:
-    name: ${COMPOSE_PROJECT_NAME}-docker
+    name: ${COMPOSE_NETWORK}

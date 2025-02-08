@@ -7,6 +7,18 @@ x-mautic-volumes:
   - ./cron:/opt/mautic/cron:z
 
 services:
+
+  smtprelay:
+    image: mwader/postfix-relay
+    hostname: mauticsmtp
+    environment:
+      - POSTFIX_MYHOSTNAME=mailing.smartoys.be
+      - OPENDKIM_DOMAINS=${OPENDKIM_DOMAINS}
+    volumes:
+      - smtprelay-data:/etc/opendkim/keys
+    networks:
+      - default      
+
   db:
     image: mysql:8.0
     environment:
@@ -94,6 +106,7 @@ services:
 volumes:
   mysql-data:
   rabbitmq-data:
+  smtprelay-data:
 
 networks:
   default:

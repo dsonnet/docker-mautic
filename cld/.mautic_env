@@ -9,3 +9,5 @@ MAUTIC_DB_PASSWORD="${MYSQL_PASSWORD}"
 
 MAUTIC_MESSENGER_DSN_EMAIL="amqp://guest:guest@rabbitmq:5672/mautic/messages"
 MAUTIC_MESSENGER_DSN_HIT="amqp://guest:guest@rabbitmq:5672/mautic/messages"
+
+OPENDKIM_DOMAINS=cld.be cld.eu

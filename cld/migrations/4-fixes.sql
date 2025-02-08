@@ -1,12 +1,2 @@
-
-
-UPDATE emails
-SET headers = '{}'
-WHERE headers = ''
-   OR JSON_VALID(headers) = 0;
-
-
-UPDATE audit_log
-SET details = '{}'
-WHERE details = ''
-   OR JSON_VALID(details) = 0;
+ALTER TABLE emails
+ADD COLUMN preheader_text VARCHAR(191) DEFAULT NULL;

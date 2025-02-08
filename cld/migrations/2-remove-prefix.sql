@@ -1,3 +1,12 @@
+USE your_database_name;
+
+SELECT CONCAT(
+  'RENAME TABLE `', TABLE_NAME, '` TO `', 
+   SUBSTRING(TABLE_NAME, LENGTH('mautic_') + 1), '`;'
+) AS rename_statement
+FROM information_schema.TABLES
+WHERE TABLE_SCHEMA = DATABASE()
+  AND TABLE_NAME LIKE 'mautic\\_%';
 
 
 RENAME TABLE `cld`.`mautic_asset_downloads` TO `cld`.`asset_downloads`;

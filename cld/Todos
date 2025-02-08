@@ -7,3 +7,9 @@ clean tables
 add events
 
 add config of smtprelay into docker
+
+bin/console cache:clear
+php bin/console mautic:update:apply --finish
+php bin/console doctrine:migration:migrate --no-interaction
+php bin/console doctrine:schema:update --dump-sql
+php bin/console cache:clear

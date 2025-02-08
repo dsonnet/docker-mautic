@@ -10,10 +10,15 @@ MAUTIC_DB_PASSWORD="${MYSQL_PASSWORD}"
 MAUTIC_MESSENGER_DSN_EMAIL="amqp://guest:guest@rabbitmq:5672/mautic/messages"
 MAUTIC_MESSENGER_DSN_HIT="amqp://guest:guest@rabbitmq:5672/mautic/messages"
 
-OPENDKIM_DOMAINS="cld.be cld.eu"
-
 MAUTIC_TRUSTED_PROXIES='["0.0.0.0/0"]'
 PHP_MEMORY_LIMIT=3G
 PHP_MAX_EXECUTION_TIME=3600
 PHP_LOG_ERRORS="ON"
 PHP_ERROR_LOG="/dev/stdout"
+
+MAILER_FROM_NAME="Cld Distribution"
+MAILER_FROM_EMAIL="newsletter@cld.eu"
+MAILER_TRANSPORT="smtp"
+MAILER_HOST="smtprelay"
+MAILER_PORT=25
+

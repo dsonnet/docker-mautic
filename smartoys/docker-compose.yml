@@ -1,0 +1,223 @@
+version: '3.7'
+
+services:
+
+  smtprelay:
+    image: mwader/postfix-relay
+    hostname: mauticsmtp
+    environment:
+      - POSTFIX_myhostname=mailing.smartoys.be
+      - OPENDKIM_DOMAINS=gameo.com dlgamer.com smartoys.be r6g.eu
+    networks:
+      - mautic-net
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.labels.mauticdb == true]
+    volumes:
+      - mautic_opendkim_keys:/etc/opendkim/keys
+    restart: always
+
+  mauticdb:
+    image: percona/percona-server:5.7
+    configs:
+      - source: mysqldv3.cnf
+        target: /etc/percona-server.conf.d/mysqld.cnf
+    hostname: mauticdb
+    volumes:
+      - mysql_data:/var/lib/mysql
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.labels.mauticdb == true]
+   # don't expose if not needed
+#      resources:
+#        reservations:
+#          memory: 16G
+#          cpus: '7.0'
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=g9uL5mCWTk1YIq92
+    command:
+      --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    networks:
+      - mautic-net
+
+  mautic:
+    image: mautic/mautic:v4
+    hostname: mautic
+    links:
+      - mauticdb:mysql
+    depends_on:
+      - mauticdb
+      - smtprelay
+    volumes:
+      - mautic_data:/var/www/html
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.labels.mautic == true]
+#      resources:
+#        reservations:
+#          memory: 6G
+#          cpus: '3.0'
+      labels:
+        - "traefik.enable=true"
+    #   - "traefik.http.routers.mautic.tls=true"
+        - "traefik.http.middlewares.mautic.compress=true"
+
+        - "traefik.http.middlewares.mautic-redirect-websecure.redirectscheme.scheme=https"
+        - "traefik.http.routers.mautic.middlewares=mautic-redirect-websecure"
+        - "traefik.http.routers.mautic.rule=Host(`mailing.smartoys.be`, `mautic.smartoys.be` )"
+        - "traefik.http.routers.mautic.entrypoints=web"
+
+        - "traefik.http.routers.mautic-secure.rule=Host(`mailing.smartoys.be`, `mautic.smartoys.be`)"
+        - "traefik.http.routers.mautic-secure.entrypoints=websecure"
+        - "traefik.http.routers.mautic-secure.tls.certresolver=letsencryptresolver"
+        - "traefik.http.services.mautic.loadbalancer.server.port=80"
+    environment:
+      - MAUTIC_DB_HOST=mauticdb
+      - MYSQL_PORT_3306_TCP=3306
+      - MAUTIC_DB_USER=root
+      - MAUTIC_DB_PASSWORD=g9uL5mCWTk1YIq92
+      - MAUTIC_DB_NAME=mailing
+      - MAUTIC_RUN_CRON_JOBS=true
+      - MAUTIC_CONFIG_DEBUG=1
+      - MAUTIC_TRUSTED_PROXIES=["0.0.0.0/0"]
+#      - PHP_MEMORY_LIMIT=3G
+#      - PHP_MAX_EXECUTION_TIME=3600
+      - PHP_LOG_ERRORS = On
+      - PHP_ERROR_LOG=/dev/stdout
+    networks:
+    # internal network for mysql
+      - mautic-net
+    # external network for reverse proxy
+      - traefik-public
+
+  mautic_dlgamer:
+    image: mautic/mautic:v4
+    hostname: mautic_dlgamer
+    links:
+      - mauticdb:mysql
+    depends_on:
+      - mauticdb
+      - smtprelay
+    volumes:
+      - mautic_data_dlgamer:/var/www/html
+    deploy:
+      mode: global
+  #    resources:
+  #      reservations:
+  #        memory: 6G
+  #        cpus: '3.0'
+      placement:
+        constraints: [node.labels.mautic == true]
+      labels:
+        - "traefik.enable=true"
+    #   - "traefik.http.routers.mautic_dlgamer_com.tls=true"
+        - "traefik.http.middlewares.mautic_dlgamer_com.compress=true"
+
+        - "traefik.http.middlewares.mautic_dlgamer_com-redirect-websecure.redirectscheme.scheme=https"
+        - "traefik.http.routers.mautic_dlgamer_com.middlewares=mautic_dlgamer_com-redirect-websecure"
+        - "traefik.http.routers.mautic_dlgamer_com.rule=Host(`mailing.dlgamer.com`, `mautic.dlgamer.com`)"
+        - "traefik.http.routers.mautic_dlgamer_com.entrypoints=web"
+
+        - "traefik.http.routers.mautic_dlgamer_com-secure.rule=Host(`mailing.dlgamer.com`, `mautic.dlgamer.com`)"
+        - "traefik.http.routers.mautic_dlgamer_com-secure.entrypoints=websecure"
+        - "traefik.http.routers.mautic_dlgamer_com-secure.tls.certresolver=letsencryptresolver"
+
+        - "traefik.http.services.mautic_dlgamer_com.loadbalancer.server.port=80"
+
+    environment:
+      - MAUTIC_DB_HOST=mauticdb
+      - MYSQL_PORT_3306_TCP=3306
+      - MAUTIC_DB_USER=root
+      - MAUTIC_DB_PASSWORD=g9uL5mCWTk1YIq92
+      - MAUTIC_DB_NAME=mautic_dlgamer_com
+      - MAUTIC_RUN_CRON_JOBS=true
+      - PHP_MEMORY_LIMIT=3G
+      - PHP_MAX_EXECUTION_TIME=3600
+      - MAUTIC_CONFIG_DEBUG=1
+      #- MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
+    networks:
+    # internal network for mysql
+      - mautic-net
+    # external network for reverse proxy
+      - traefik-public
+
+  mautic_gameo:
+    image: mautic/mautic:v4
+    hostname: mautic_gameo
+    links:
+      - mauticdb:mysql
+    depends_on:
+      - mauticdb
+      - smtprelay
+    volumes:
+      - mautic_data_gameo:/var/www/html
+    deploy:
+      mode: global
+ #     resources:
+ #       reservations:
+ #         memory: 6G
+ #         cpus: '3.0'
+      placement:
+        constraints: [node.labels.mautic == true]
+      labels:
+        - "traefik.enable=true"
+    #   - "traefik.http.routers.mautic_gameo_com.tls=true"
+        - "traefik.http.middlewares.mautic_gameo_com.compress=true"
+
+        - "traefik.http.middlewares.mautic_gameo_com-redirect-websecure.redirectscheme.scheme=https"
+        - "traefik.http.routers.mautic_gameo_com.middlewares=mautic_gameo_com-redirect-websecure"
+        - "traefik.http.routers.mautic_gameo_com.rule=Host(`mailing.gameo.com`, `mautic.gameo.com`)"
+        - "traefik.http.routers.mautic_gameo_com.entrypoints=web"
+
+        - "traefik.http.routers.mautic_gameo_com-secure.rule=Host(`mailing.gameo.com`, `mautic.gameo.com`)"
+        - "traefik.http.routers.mautic_gameo_com-secure.entrypoints=websecure"
+        - "traefik.http.routers.mautic_gameo_com-secure.tls.certresolver=letsencryptresolver"
+
+        - "traefik.http.services.mautic_gameo_com.loadbalancer.server.port=80"
+
+    environment:
+      - MAUTIC_DB_HOST=mauticdb
+      - MYSQL_PORT_3306_TCP=3306
+      - MAUTIC_DB_USER=root
+      - MAUTIC_DB_PASSWORD=g9uL5mCWTk1YIq92
+      - MAUTIC_DB_NAME=mautic_gameo_com
+      - MAUTIC_RUN_CRON_JOBS=true
+      #- MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
+    networks:
+    # internal network for mysql
+      - mautic-net
+    # external network for reverse proxy
+      - traefik-public
+
+volumes:
+  mysql_data:
+    driver: local
+  mautic_data:
+    driver: local
+  mautic_data_smartoys:
+    driver: local    
+  mautic_data_dlgamer:
+    driver: local
+  mautic_data_gameo:
+    driver: local
+  mautic_opendkim_keys:
+    driver: local
+  mautic_opendkim_keys_dlgamer:
+    driver: local
+  mautic_opendkim_keys_gameo:
+    driver: local
+configs:
+  mysqldv3.cnf:
+    external: true
+
+
+networks:
+  mautic-net:
+    external: true
+  traefik-public:
+    external: true

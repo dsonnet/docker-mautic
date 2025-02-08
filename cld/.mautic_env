@@ -11,10 +11,7 @@ MAUTIC_MESSENGER_DSN_EMAIL="amqp://guest:guest@rabbitmq:5672/mautic/messages"
 MAUTIC_MESSENGER_DSN_HIT="amqp://guest:guest@rabbitmq:5672/mautic/messages"
 
 MAUTIC_TRUSTED_PROXIES='["0.0.0.0/0"]'
-PHP_MEMORY_LIMIT=3G
-PHP_MAX_EXECUTION_TIME=3600
-PHP_LOG_ERRORS="ON"
-PHP_ERROR_LOG="/dev/stdout"
+
 
 MAUTIC_SITE_URL="https://mailing.cld.eu"
 

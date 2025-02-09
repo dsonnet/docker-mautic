@@ -103,9 +103,7 @@ services:
       - MAUTIC_DB_PASSWORD=g9uL5mCWTk1YIq92
       - MAUTIC_DB_NAME=mailing
       - MAUTIC_CONFIG_DEBUG=1
-      - MAUTIC_TRUSTED_PROXIES=["0.0.0.0/0"]
-      - MAUTIC_MESSENGER_DSN_EMAIL="amqp://guest:guest@rabbitmq:5672/mautic/messages"
-      - MAUTIC_MESSENGER_DSN_HIT="amqp://guest:guest@rabbitmq:5672/mautic/messages"          
+      - MAUTIC_TRUSTED_PROXIES=["0.0.0.0/0"]       
       - PHP_INI_VALUE_MEMORY_LIMIT=5G
       - PHP_INI_VALUE_MAX_EXECUTION_TIME=3600
       - PHP_INI_VALUE_LOG_ERRORS = On
@@ -126,7 +124,7 @@ services:
       - smtprelay
     volumes: 
       - mautic_smartoys_config:/var/www/html/config
-      - mautic_smartoys_logs:/var/www/html/var/logs
+      - mautic_smartoys_cron_logs:/var/www/html/var/logs
       - mautic_smartoys_files:/var/www/html/docroot/media/files
       - mautic_smartoys_images:/var/www/html/docroot/media/images
       - mautic_smartoys_cron:/opt/mautic/cron
@@ -164,7 +162,7 @@ services:
       - smtprelay
     volumes: 
       - mautic_smartoys_config:/var/www/html/config
-      - mautic_smartoys_logs:/var/www/html/var/logs
+      - mautic_smartoys_worker_logs:/var/www/html/var/logs
       - mautic_smartoys_files:/var/www/html/docroot/media/files
       - mautic_smartoys_images:/var/www/html/docroot/media/images
       - mautic_smartoys_cron:/opt/mautic/cron
@@ -322,6 +320,14 @@ volumes:
     driver: local
   mautic_smartoys_cron:
     driver: local    
+  # Subfolders for "mautic_smartoys_worker"
+  mautic_smartoys_worker_logs:
+    driver: local
+  # Subfolders for "mautic_smartoys_cron"
+  mautic_smartoys_cron_logs:
+    driver: local
+
+
 configs:
   mysqldv3.cnf:
     external: true

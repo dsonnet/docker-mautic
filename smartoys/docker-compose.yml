@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   rabbitmq:
-    image: rabbitmq:3
+    image: rabbitmq:3-management
     deploy:
       mode: global
       placement:
@@ -12,11 +12,11 @@ services:
       - RABBITMQ_DEFAULT_VHOST=mautic
     volumes: 
       - rabbitmq-data:/var/lib/rabbitmq
-    ports:
-      - "5672:5672"    # AMQP port
-      - "15672:15672"  # RabbitMQ Management UI          
     networks:
       - mautic-net
+    ports:
+      - "5672:5672"    # AMQP port
+      - "15672:15672"  # RabbitMQ Management UI      
 
   smtprelay:
     image: mwader/postfix-relay
@@ -48,8 +48,6 @@ services:
 #        reservations:
 #          memory: 16G
 #          cpus: '7.0'
-    ports:
-      - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=g9uL5mCWTk1YIq92
     command:
@@ -59,6 +57,8 @@ services:
       - --sql-mode=STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION   
     networks:
       - mautic-net
+    ports:
+      - 3306:3306      
 
   mautic_smartoys:
     image: mautic/mautic:5.2.1-apache

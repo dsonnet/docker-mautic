@@ -97,15 +97,15 @@ services:
         - "traefik.http.routers.mautic-secure.tls.certresolver=letsencryptresolver"
         - "traefik.http.services.mautic.loadbalancer.server.port=80"
     environment:
+      - DOCKER_MAUTIC_ROLE=mautic_web 
+
+      # - MAUTIC_CONFIG_DEBUG=1
       - MAUTIC_DB_HOST=mauticdb
       - MAUTIC_DB_USER=root
       - MAUTIC_DB_PASSWORD=g9uL5mCWTk1YIq92
       - MAUTIC_DB_PORT=3306
-      # keep both entries
-      - MAUTIC_DB_DATABASE=mailing 
-      - MAUTIC_DB_NAME=mailing
-      - MAUTIC_CONFIG_DEBUG=1
-      - MAUTIC_TRUSTED_PROXIES=["0.0.0.0/0"]       
+    
+
       - PHP_INI_VALUE_MEMORY_LIMIT=5G
       - PHP_INI_VALUE_MAX_EXECUTION_TIME=3600
       - PHP_INI_VALUE_LOG_ERRORS = On
@@ -135,18 +135,10 @@ services:
       placement:
         constraints: [node.labels.mautic == true]
     environment:
-      - DOCKER_MAUTIC_ROLE=mautic_cron   
-      - MAUTIC_DB_HOST=mauticdb
-      - MAUTIC_DB_USER=root
-      - MAUTIC_DB_PASSWORD=g9uL5mCWTk1YIq92
-      - MAUTIC_DB_PORT=3306
-      # keep both entries
-      - MAUTIC_DB_DATABASE=mailing
-      - MAUTIC_DB_NAME=mailing           
-      - MAUTIC_CONFIG_DEBUG=1
-      - MAUTIC_TRUSTED_PROXIES=["0.0.0.0/0"]
-      - MAUTIC_MESSENGER_DSN_EMAIL="amqp://guest:guest@rabbitmq:5672/mautic/messages"
-      - MAUTIC_MESSENGER_DSN_HIT="amqp://guest:guest@rabbitmq:5672/mautic/messages"      
+      - DOCKER_MAUTIC_ROLE=mautic_cron       
+
+      # - MAUTIC_CONFIG_DEBUG=1
+
       - PHP_INI_VALUE_MEMORY_LIMIT=5G
       - PHP_INI_VALUE_MAX_EXECUTION_TIME=3600
       - PHP_INI_VALUE_LOG_ERRORS = On
@@ -177,17 +169,11 @@ services:
         constraints: [node.labels.mautic == true]
     environment:
       - DOCKER_MAUTIC_ROLE=mautic_worker
-      - MAUTIC_DB_HOST=mauticdb
-      - MAUTIC_DB_USER=root
-      - MAUTIC_DB_PASSWORD=g9uL5mCWTk1YIq92
-      - MAUTIC_DB_PORT=3306
-       # keep both entries
-      - MAUTIC_DB_DATABASE=mailing 
-      - MAUTIC_DB_NAME=mailing      
-      - MAUTIC_CONFIG_DEBUG=1
-      - MAUTIC_TRUSTED_PROXIES=["0.0.0.0/0"]
-      - MAUTIC_MESSENGER_DSN_EMAIL=amqp://guest:guest@rabbitmq:5672/mautic/messages
-      - MAUTIC_MESSENGER_DSN_HIT=amqp://guest:guest@rabbitmq:5672/mautic/messages
+
+      # - MAUTIC_CONFIG_DEBUG=1
+      
+
+
       - PHP_INI_VALUE_MEMORY_LIMIT=5G
       - PHP_INI_VALUE_MAX_EXECUTION_TIME=3600
       - PHP_INI_VALUE_LOG_ERRORS = On
@@ -328,9 +314,13 @@ volumes:
   mautic_smartoys_cron:
     driver: local    
   # Subfolders for "mautic_smartoys_worker"
+  mautic_smartoys_worker_config:
+    driver: local  
   mautic_smartoys_worker_logs:
     driver: local
   # Subfolders for "mautic_smartoys_cron"
+  mautic_smartoys_cron_config:
+    driver: local  
   mautic_smartoys_cron_logs:
     driver: local
 

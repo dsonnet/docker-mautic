@@ -40,7 +40,7 @@ services:
       - --slow_query_log=1
       - --slow_query_log_file=/var/log/mysql/mysql-slow.log
       - --long_query_time=1
-      - --sql-mode="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION"   
+      - --sql-mode=STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION   
     networks:
       - mautic-net
 
@@ -89,8 +89,8 @@ services:
       - MAUTIC_RUN_CRON_JOBS=true
       - MAUTIC_CONFIG_DEBUG=1
       - MAUTIC_TRUSTED_PROXIES=["0.0.0.0/0"]
-#      - PHP_MEMORY_LIMIT=3G
-#      - PHP_MAX_EXECUTION_TIME=3600
+      - PHP_MEMORY_LIMIT=2G
+      - PHP_MAX_EXECUTION_TIME=3600
       - PHP_LOG_ERRORS = On
       - PHP_ERROR_LOG=/dev/stdout
     networks:

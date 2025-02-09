@@ -2,6 +2,22 @@ version: '3.7'
 
 services:
 
+  rabbitmq:
+    image: rabbitmq:3
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.labels.mautic == true]    
+    environment:
+      - RABBITMQ_DEFAULT_VHOST=mautic
+    volumes: 
+      - rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"    # AMQP port
+      - "15672:15672"  # RabbitMQ Management UI          
+    networks:
+      - mautic-net
+
   smtprelay:
     image: mwader/postfix-relay
     hostname: mauticsmtp
@@ -46,7 +62,7 @@ services:
 
   mautic_smartoys:
     image: mautic/mautic:5.2.1-apache
-    hostname: mautic
+    hostname: mautic_smartoys
     links:
       - mauticdb:mysql
     depends_on:
@@ -86,18 +102,94 @@ services:
       - MAUTIC_DB_USER=root
       - MAUTIC_DB_PASSWORD=g9uL5mCWTk1YIq92
       - MAUTIC_DB_NAME=mailing
-      - MAUTIC_RUN_CRON_JOBS=true
       - MAUTIC_CONFIG_DEBUG=1
       - MAUTIC_TRUSTED_PROXIES=["0.0.0.0/0"]
-      - PHP_MEMORY_LIMIT=2G
-      - PHP_MAX_EXECUTION_TIME=3600
-      - PHP_LOG_ERRORS = On
-      - PHP_ERROR_LOG=/dev/stdout
+      - MAUTIC_MESSENGER_DSN_EMAIL="amqp://guest:guest@rabbitmq:5672/mautic/messages"
+      - MAUTIC_MESSENGER_DSN_HIT="amqp://guest:guest@rabbitmq:5672/mautic/messages"          
+      - PHP_INI_VALUE_MEMORY_LIMIT=5G
+      - PHP_INI_VALUE_MAX_EXECUTION_TIME=3600
+      - PHP_INI_VALUE_LOG_ERRORS = On
+      - PHP_INI_VALUE_ERROR_LOG=/dev/stdout
     networks:
     # internal network for mysql
       - mautic-net
     # external network for reverse proxy
       - traefik-public
+
+  mautic_smartoys_cron:
+    image: mautic/mautic:5.2.1-apache
+    hostname: mautic_smartoys_cron
+    links:
+      - mauticdb:mysql
+    depends_on:
+      - mauticdb
+      - smtprelay
+    volumes: 
+      - mautic_smartoys_config:/var/www/html/config
+      - mautic_smartoys_logs:/var/www/html/var/logs
+      - mautic_smartoys_files:/var/www/html/docroot/media/files
+      - mautic_smartoys_images:/var/www/html/docroot/media/images
+      - mautic_smartoys_cron:/opt/mautic/cron
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.labels.mautic == true]
+    environment:
+      - MAUTIC_DB_HOST=mauticdb
+      - MYSQL_PORT_3306_TCP=3306
+      - MAUTIC_DB_USER=root
+      - MAUTIC_DB_PASSWORD=g9uL5mCWTk1YIq92
+      - MAUTIC_DB_NAME=mailing
+      - MAUTIC_CONFIG_DEBUG=1
+      - MAUTIC_TRUSTED_PROXIES=["0.0.0.0/0"]
+      - MAUTIC_MESSENGER_DSN_EMAIL="amqp://guest:guest@rabbitmq:5672/mautic/messages"
+      - MAUTIC_MESSENGER_DSN_HIT="amqp://guest:guest@rabbitmq:5672/mautic/messages"      
+      - PHP_INI_VALUE_MEMORY_LIMIT=5G
+      - PHP_INI_VALUE_MAX_EXECUTION_TIME=3600
+      - PHP_INI_VALUE_LOG_ERRORS = On
+      - PHP_INI_VALUE_ERROR_LOG=/dev/stdout
+      - DOCKER_MAUTIC_ROLE=mautic_cron      
+      
+    networks:
+    # internal network for mysql
+      - mautic-net   
+
+  mautic_smartoys_worker:
+    image: mautic/mautic:5.2.1-apache
+    hostname: mautic_smartoys_worker
+    links:
+      - mauticdb:mysql
+    depends_on:
+      - mauticdb
+      - smtprelay
+    volumes: 
+      - mautic_smartoys_config:/var/www/html/config
+      - mautic_smartoys_logs:/var/www/html/var/logs
+      - mautic_smartoys_files:/var/www/html/docroot/media/files
+      - mautic_smartoys_images:/var/www/html/docroot/media/images
+      - mautic_smartoys_cron:/opt/mautic/cron
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.labels.mautic == true]
+    environment:
+      - DOCKER_MAUTIC_ROLE=mautic_worker
+      - MAUTIC_DB_HOST=mauticdb
+      - MYSQL_PORT_3306_TCP=3306
+      - MAUTIC_DB_USER=root
+      - MAUTIC_DB_PASSWORD=g9uL5mCWTk1YIq92
+      - MAUTIC_DB_NAME=mailing
+      - MAUTIC_CONFIG_DEBUG=1
+      - MAUTIC_TRUSTED_PROXIES=["0.0.0.0/0"]
+      - MAUTIC_MESSENGER_DSN_EMAIL="amqp://guest:guest@rabbitmq:5672/mautic/messages"
+      - MAUTIC_MESSENGER_DSN_HIT="amqp://guest:guest@rabbitmq:5672/mautic/messages"          
+      - PHP_INI_VALUE_MEMORY_LIMIT=5G
+      - PHP_INI_VALUE_MAX_EXECUTION_TIME=3600
+      - PHP_INI_VALUE_LOG_ERRORS = On
+      - PHP_INI_VALUE_ERROR_LOG=/dev/stdoutt
+    networks:
+    # internal network for mysql
+      - mautic-net 
 
   mautic_dlgamer:
     image: mautic/mautic:v4
@@ -201,6 +293,8 @@ services:
 
 
 volumes:
+  rabbitmq-data:
+    driver: local 
   mysql_data:
     driver: local
   mautic_data:

@@ -1,4 +1,5 @@
-x-mautic-volumes: &mautic-volumes
+x-mautic-volumes:
+  &mautic-volumes
   - ./mautic/config:/var/www/html/config:z
   - ./mautic/logs:/var/www/html/var/logs:z
   - ./mautic/media/files:/var/www/html/docroot/media/files:z

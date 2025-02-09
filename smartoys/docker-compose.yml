@@ -98,10 +98,10 @@ services:
         - "traefik.http.services.mautic.loadbalancer.server.port=80"
     environment:
       - MAUTIC_DB_HOST=mauticdb
-      - MYSQL_PORT_3306_TCP=3306
       - MAUTIC_DB_USER=root
       - MAUTIC_DB_PASSWORD=g9uL5mCWTk1YIq92
-      - MAUTIC_DB_NAME=mailing
+      - MAUTIC_DB_PORT=3306
+      - MAUTIC_DB_DATABASE=mailing 
       - MAUTIC_CONFIG_DEBUG=1
       - MAUTIC_TRUSTED_PROXIES=["0.0.0.0/0"]       
       - PHP_INI_VALUE_MEMORY_LIMIT=5G
@@ -133,11 +133,12 @@ services:
       placement:
         constraints: [node.labels.mautic == true]
     environment:
+      - DOCKER_MAUTIC_ROLE=mautic_cron   
       - MAUTIC_DB_HOST=mauticdb
-      - MYSQL_PORT_3306_TCP=3306
       - MAUTIC_DB_USER=root
       - MAUTIC_DB_PASSWORD=g9uL5mCWTk1YIq92
-      - MAUTIC_DB_NAME=mailing
+      - MAUTIC_DB_PORT=3306
+      - MAUTIC_DB_DATABASE=mailing     
       - MAUTIC_CONFIG_DEBUG=1
       - MAUTIC_TRUSTED_PROXIES=["0.0.0.0/0"]
       - MAUTIC_MESSENGER_DSN_EMAIL="amqp://guest:guest@rabbitmq:5672/mautic/messages"
@@ -146,7 +147,7 @@ services:
       - PHP_INI_VALUE_MAX_EXECUTION_TIME=3600
       - PHP_INI_VALUE_LOG_ERRORS = On
       - PHP_INI_VALUE_ERROR_LOG=/dev/stdout
-      - DOCKER_MAUTIC_ROLE=mautic_cron      
+   
       
     networks:
     # internal network for mysql
@@ -173,10 +174,10 @@ services:
     environment:
       - DOCKER_MAUTIC_ROLE=mautic_worker
       - MAUTIC_DB_HOST=mauticdb
-      - MYSQL_PORT_3306_TCP=3306
       - MAUTIC_DB_USER=root
       - MAUTIC_DB_PASSWORD=g9uL5mCWTk1YIq92
-      - MAUTIC_DB_NAME=mailing
+      - MAUTIC_DB_PORT=3306
+      - MAUTIC_DB_DATABASE=mailing 
       - MAUTIC_CONFIG_DEBUG=1
       - MAUTIC_TRUSTED_PROXIES=["0.0.0.0/0"]
       - MAUTIC_MESSENGER_DSN_EMAIL=amqp://guest:guest@rabbitmq:5672/mautic/messages

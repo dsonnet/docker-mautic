@@ -40,8 +40,6 @@ services:
     image: mautic/mautic:5.2.1-apache
     links:
       - db:mysql
-    ports:
-      - 8003:80
     volumes: *mautic-volumes
 
     environment:
@@ -60,6 +58,28 @@ services:
         condition: service_healthy
     networks:
       - default
+      - web
+    labels:
+      # Enable Traefik
+      - "traefik.enable=true"
+      
+      # HTTP Router - redirects to HTTPS
+      - "traefik.http.routers.mautic-http.rule=Host(`newsletter.smartoys.be`)"
+      - "traefik.http.routers.mautic-http.entrypoints=http"
+      - "traefik.http.routers.mautic-http.middlewares=https-redirect"
+      
+      # HTTPS Router
+      - "traefik.http.routers.mautic-https.rule=Host(`newsletter.smartoys.be`)"
+      - "traefik.http.routers.mautic-https.entrypoints=https"
+      - "traefik.http.routers.mautic-https.tls=true"
+      - "traefik.http.routers.mautic-https.tls.certresolver=cloudflare"
+      - "traefik.http.routers.mautic-https.middlewares=secure-headers"
+      
+      # Service - specify the port
+      - "traefik.http.services.mautic.loadbalancer.server.port=80"
+      
+      # Connect to the web network
+      - "traefik.docker.network=web"
 
   mautic_cron:
     image: mautic/mautic:5.2.1-apache
@@ -98,3 +118,5 @@ volumes:
 networks:
   default:
     name: ${COMPOSE_PROJECT_NAME}-docker
+  web:
+    external: true

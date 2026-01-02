@@ -42,7 +42,7 @@ services:
       - default
 
   mautic_web:
-    image: mautic/mautic:5.2.9-apache
+    image: mautic/mautic:6.0.7-apache
     links:
       - db:mysql
     volumes: *mautic-volumes
@@ -87,7 +87,7 @@ services:
       - "traefik.docker.network=web"
 
   mautic_cron:
-    image: mautic/mautic:5.2.9-apache
+    image: mautic/mautic:6.0.7-apache
     links:
       - db:mysql
     volumes: *mautic-volumes
@@ -102,7 +102,7 @@ services:
       - default
 
   mautic_worker:
-    image: mautic/mautic:5.2.9-apache
+    image: mautic/mautic:6.0.7-apache
     links:
       - db:mysql
     volumes: *mautic-volumes

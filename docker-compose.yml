@@ -19,7 +19,10 @@ services:
     ports:
       - 3306:3306    
     command:
-      - --sql-mode==STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION          
+      - --slow_query_log=1
+      - --slow_query_log_file=/var/log/mysql/mysql-slow.log
+      - --long_query_time=1
+      - --sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION          
     healthcheck:
       test: mysqladmin --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD ping
       start_period: 5s

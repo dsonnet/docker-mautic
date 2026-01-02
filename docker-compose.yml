@@ -8,7 +8,7 @@ x-mautic-volumes:
 
 services:
   db:
-    image: mysql:8.0
+    image: percona/percona-server:8.0.44
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
@@ -37,7 +37,7 @@ services:
       - default
 
   mautic_web:
-    image: mautic/mautic:5.2.1-apache
+    image: mautic/mautic:5.2.9-apache
     links:
       - db:mysql
     volumes: *mautic-volumes
@@ -82,7 +82,7 @@ services:
       - "traefik.docker.network=web"
 
   mautic_cron:
-    image: mautic/mautic:5.2.1-apache
+    image: mautic/mautic:5.2.9-apache
     links:
       - db:mysql
     volumes: *mautic-volumes
@@ -97,7 +97,7 @@ services:
       - default
 
   mautic_worker:
-    image: mautic/mautic:5.2.1-apache
+    image: mautic/mautic:5.2.9-apache
     links:
       - db:mysql
     volumes: *mautic-volumes

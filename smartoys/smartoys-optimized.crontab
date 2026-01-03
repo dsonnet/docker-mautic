@@ -1,0 +1,61 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# System cron jobs
+        17 * * * *	root    cd / && run-parts --report /etc/cron.hourly
+        25 6 * * *	root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.daily )
+        47 6 * * 7	root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )
+        52 6 1 * *	root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )
+
+# MAUTIC CRON JOBS - OPTIMIZED FOR PERFORMANCE
+# Note: Using /var/www/html/bin/console for Mautic 6.x
+
+# Segments Update - every 15 min (staggered at 8,23,38,52)
+8,23,38,52 * * * *	www-data   php /var/www/html/bin/console mautic:segments:update > /var/log/cron.pipe 2>&1
+
+# Campaigns Update - every 15 min (5 min after segments - 5,20,35,50)
+5,20,35,50 * * * *	www-data   php /var/www/html/bin/console mautic:campaigns:update > /var/log/cron.pipe 2>&1
+
+# Campaigns Trigger - every 15 min (2 min offset - 2,17,32,47)
+2,17,32,47 * * * *	www-data   php /var/www/html/bin/console mautic:campaigns:trigger > /var/log/cron.pipe 2>&1
+
+# Email operations - every 15 min
+0,15,30,45 * * * *	www-data   php /var/www/html/bin/console mautic:emails:send > /var/log/cron.pipe 2>&1
+0,15,30,45 * * * *	www-data   php /var/www/html/bin/console mautic:email:fetch > /var/log/cron.pipe 2>&1
+0,15,30,45 * * * *	www-data   php /var/www/html/bin/console mautic:messages:send > /var/log/cron.pipe 2>&1
+
+# Social monitoring - every 15 min
+0,15,30,45 * * * *	www-data   php /var/www/html/bin/console mautic:social:monitoring > /var/log/cron.pipe 2>&1
+
+# Webhooks - every 15 min
+0,15,30,45 * * * *	www-data   php /var/www/html/bin/console mautic:webhooks:process > /var/log/cron.pipe 2>&1
+
+# Broadcast emails - every 15 min
+0,15,30,45 * * * *	www-data   php /var/www/html/bin/console mautic:broadcast:send > /var/log/cron.pipe 2>&1
+
+# Import/Export - every 5 min
+       */5 * * * *	www-data   php /var/www/html/bin/console mautic:import > /var/log/cron.pipe 2>&1
+       */5 * * * *	www-data   php /var/www/html/bin/console mautic:contacts:scheduled_export > /var/log/cron.pipe 2>&1
+
+# Reports - every 5 min
+       */5 * * * *	www-data   php /var/www/html/bin/console mautic:reports:scheduler > /var/log/cron.pipe 2>&1
+
+# Maintenance - daily at 01:00 (365 days retention with GDPR compliance)
+         0 1 * * *	www-data   php /var/www/html/bin/console mautic:maintenance:cleanup --days-old=365 --gdpr -n > /var/log/cron.pipe 2>&1
+
+# Queue processing - daily at 01:00 (background processes)
+         0 1 * * *	www-data   nohup php /var/www/html/bin/console mautic:queue:process --env=prod -i page_hit > /dev/null 2>&1 &
+         0 1 * * *	www-data   nohup php /var/www/html/bin/console mautic:queue:process --env=prod -i email_hit > /dev/null 2>&1 &
+
+# GeoIP update - monthly on 15th at 3:11am
+        11 3 15 * *	www-data   geoipupdate -f /etc/GeoIP.conf -d /var/www/html/var/cache/ip_data > /var/log/cron.pipe 2>&1
+
+# MaxMind CCPA - weekly on Sunday at 3:02am
+         2 3 * * 0	www-data   php /var/www/html/bin/console mautic:donotsell:download > /var/log/cron.pipe 2>&1
+
+# Unused IP cleanup - monthly on 10th at 5am
+         0 5 10 * *	www-data   php /var/www/html/bin/console mautic:unusedip:delete > /var/log/cron.pipe 2>&1
+
+# Queue processing at reboot (background processes)
+@reboot	www-data	nohup php /var/www/html/bin/console mautic:queue:process --env=prod -i page_hit > /dev/null 2>&1 &
+@reboot	www-data	nohup php /var/www/html/bin/console mautic:queue:process --env=prod -i email_hit > /dev/null 2>&1 &

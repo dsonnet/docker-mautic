@@ -35,7 +35,7 @@ services:
       - MAUTIC_MESSENGER_DSN_HIT=amqp://guest:guest@rabbitmq:5672/mautic/messages
       # Proxy and URL Configuration
       - MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
-      - MAUTIC_URL=https://newsletter.smartoys.be
+      - MAUTIC_URL=${MAUTIC_URL}
     healthcheck:
       test: curl http://localhost
       start_period: 5s
@@ -84,7 +84,7 @@ services:
       - MAUTIC_MESSENGER_DSN_HIT=amqp://guest:guest@rabbitmq:5672/mautic/messages
       # Proxy and URL Configuration
       - MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
-      - MAUTIC_URL=https://newsletter.smartoys.be
+      - MAUTIC_URL=${MAUTIC_URL}
     depends_on:
       mautic_web:
         condition: service_healthy
@@ -110,7 +110,7 @@ services:
       - MAUTIC_MESSENGER_DSN_HIT=amqp://guest:guest@rabbitmq:5672/mautic/messages
       # Proxy and URL Configuration
       - MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
-      - MAUTIC_URL=https://newsletter.smartoys.be
+      - MAUTIC_URL=${MAUTIC_URL}
     depends_on:
       mautic_web:
         condition: service_healthy

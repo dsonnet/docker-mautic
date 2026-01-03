@@ -1,19 +1,32 @@
 # Mautic Environment Configuration
-# See https://docs.mautic.org/en/5.x/
 # use this file for environment variables that can be used.
-
-# Database Configuration (connects to external percona-db container)
-MAUTIC_DB_HOST=percona-db
-MAUTIC_DB_PORT=3306
-MAUTIC_DB_DATABASE=mautic_smartoys
-MAUTIC_DB_USER=mautic_db_smartoys
-MAUTIC_DB_PASSWORD=ueiMNXmM5uGrsHen
-
 # Message Queue Configuration
+# then references are replaced by portainer where real env values are defined
 MAUTIC_MESSENGER_DSN_EMAIL=amqp://guest:guest@rabbitmq:5672/mautic/messages
 MAUTIC_MESSENGER_DSN_HIT=amqp://guest:guest@rabbitmq:5672/mautic/messages
 
-# Proxy and URL Configuration
+# Mautic Configuration
 MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
-MAUTIC_URL=https://newsletter.smartoys.be
+MAUTIC_URL="${MAUTIC_URL}"
 
+# Database Configuration (connects to external percona-db container)
+MAUTIC_DB_HOST="${MYSQL_HOST}"
+MAUTIC_DB_PORT="${MYSQL_PORT}"
+MAUTIC_DB_DATABASE="${MYSQL_DATABASE}"
+MAUTIC_DB_USER="${MYSQL_USER}"
+MAUTIC_DB_PASSWORD="${MYSQL_PASSWORD}"
+
+
+# Optional: Set to 1 to run migrations on startup
+DOCKER_MAUTIC_RUN_MIGRATIONS="${DOCKER_MAUTIC_RUN_MIGRATIONS}"
+
+# Optional: Set to 1 to load test data
+DOCKER_MAUTIC_LOAD_TEST_DATA="${DOCKER_MAUTIC_LOAD_TEST_DATA}"
+
+# RabbitMQ Settings
+RABBITMQ_DEFAULT_VHOST="${RABBITMQ_DEFAULT_VHOST}"
+
+# Compose Project Name
+COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME}"
+
+COMPOSE_NETWORK="${COMPOSE_NETWORK}"

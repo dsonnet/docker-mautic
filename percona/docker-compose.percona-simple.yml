@@ -26,7 +26,7 @@ services:
       - --max_connections=200
       - --innodb_buffer_pool_size=1G
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "$$MYSQL_USER", "-p$$MYSQL_PASSWORD"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -34,25 +34,19 @@ services:
     networks:
       - mautic-db-network
 
+  # Percona Toolkit analyzer - runs on demand
   percona-toolkit:
     image: perconalab/percona-toolkit:latest
     container_name: percona-toolkit
-    restart: unless-stopped
     volumes:
       - ./logs:/var/log/mysql:ro
       - ./scripts:/opt/analysis:ro
       - ./reports:/reports
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-    command: tail -f /dev/null
+    command: tail -f /dev/null  # Keep container running
     networks:
       - mautic-db-network
     depends_on:
-      percona-db:
-        condition: service_healthy
+      - percona-db
 
 volumes:
   mysql-data:

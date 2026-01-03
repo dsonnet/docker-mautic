@@ -36,8 +36,6 @@ services:
       - default
       - web
       - mautic-db-network
-    external_links:
-      - percona-db:mysql
     labels:
       # Enable Traefik
       - "traefik.enable=true"

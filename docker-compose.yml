@@ -19,7 +19,7 @@ services:
       - default
 
   mautic_web:
-    image: mautic/mautic:6.0.7-apache
+    image: ghcr.io/smartoys/mautic-stack:6.0.7-apache
     volumes: *mautic-volumes
     environment:
       - DOCKER_MAUTIC_LOAD_TEST_DATA=false
@@ -69,7 +69,7 @@ services:
       - "traefik.docker.network=web"
 
   mautic_cron:
-    image: mautic/mautic:6.0.7-apache
+    image: ghcr.io/smartoys/mautic-stack:6.0.7-apache
     volumes: *mautic-volumes
     environment:
       - DOCKER_MAUTIC_ROLE=mautic_cron
@@ -95,7 +95,7 @@ services:
       - percona-db:mysql
 
   mautic_worker:
-    image: mautic/mautic:6.0.7-apache
+    image: ghcr.io/smartoys/mautic-stack:6.0.7-apache
     volumes: *mautic-volumes
     environment:
       - DOCKER_MAUTIC_ROLE=mautic_worker

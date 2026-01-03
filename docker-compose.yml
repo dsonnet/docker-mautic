@@ -12,7 +12,7 @@ services:
   rabbitmq:
     image: rabbitmq:3
     environment:
-      - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST}
+      - RABBITMQ_DEFAULT_VHOST=mautic
     volumes: 
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
@@ -22,20 +22,20 @@ services:
     image: mautic/mautic:6.0.7-apache
     volumes: *mautic-volumes
     environment:
-      - DOCKER_MAUTIC_LOAD_TEST_DATA=${DOCKER_MAUTIC_LOAD_TEST_DATA}
-      - DOCKER_MAUTIC_RUN_MIGRATIONS=${DOCKER_MAUTIC_RUN_MIGRATIONS}
+      - DOCKER_MAUTIC_LOAD_TEST_DATA=false
+      - DOCKER_MAUTIC_RUN_MIGRATIONS=false
       # Database Configuration
       - MAUTIC_DB_HOST=percona-db
       - MAUTIC_DB_PORT=3306
-      - MAUTIC_DB_DATABASE=${MAUTIC_DB_DATABASE}
-      - MAUTIC_DB_USER=${MAUTIC_DB_USER}
-      - MAUTIC_DB_PASSWORD=${MYSQL_PASSWORD}
+      - MAUTIC_DB_DATABASE=mautic_smartoys
+      - MAUTIC_DB_USER=mautic_db_smartoys
+      - MAUTIC_DB_PASSWORD=ueiMNXmM5uGrsHen
       # Message Queue Configuration
       - MAUTIC_MESSENGER_DSN_EMAIL=amqp://guest:guest@rabbitmq:5672/mautic/messages
       - MAUTIC_MESSENGER_DSN_HIT=amqp://guest:guest@rabbitmq:5672/mautic/messages
       # Proxy and URL Configuration
       - MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
-      - MAUTIC_URL=${MAUTIC_URL}
+      - MAUTIC_URL=https://newsletter.smartoys.be
     healthcheck:
       test: curl http://localhost
       start_period: 5s
@@ -76,15 +76,15 @@ services:
       # Database Configuration
       - MAUTIC_DB_HOST=percona-db
       - MAUTIC_DB_PORT=3306
-      - MAUTIC_DB_DATABASE=${MAUTIC_DB_DATABASE}
-      - MAUTIC_DB_USER=${MAUTIC_DB_USER}
-      - MAUTIC_DB_PASSWORD=${MYSQL_PASSWORD}
+      - MAUTIC_DB_DATABASE=mautic_smartoys
+      - MAUTIC_DB_USER=mautic_db_smartoys
+      - MAUTIC_DB_PASSWORD=ueiMNXmM5uGrsHen
       # Message Queue Configuration
       - MAUTIC_MESSENGER_DSN_EMAIL=amqp://guest:guest@rabbitmq:5672/mautic/messages
       - MAUTIC_MESSENGER_DSN_HIT=amqp://guest:guest@rabbitmq:5672/mautic/messages
       # Proxy and URL Configuration
       - MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
-      - MAUTIC_URL=${MAUTIC_URL}
+      - MAUTIC_URL=https://newsletter.smartoys.be
     depends_on:
       mautic_web:
         condition: service_healthy
@@ -102,15 +102,15 @@ services:
       # Database Configuration
       - MAUTIC_DB_HOST=percona-db
       - MAUTIC_DB_PORT=3306
-      - MAUTIC_DB_DATABASE=${MAUTIC_DB_DATABASE}
-      - MAUTIC_DB_USER=${MAUTIC_DB_USER}
-      - MAUTIC_DB_PASSWORD=${MYSQL_PASSWORD}
+      - MAUTIC_DB_DATABASE=mautic_smartoys
+      - MAUTIC_DB_USER=mautic_db_smartoys
+      - MAUTIC_DB_PASSWORD=ueiMNXmM5uGrsHen
       # Message Queue Configuration
       - MAUTIC_MESSENGER_DSN_EMAIL=amqp://guest:guest@rabbitmq:5672/mautic/messages
       - MAUTIC_MESSENGER_DSN_HIT=amqp://guest:guest@rabbitmq:5672/mautic/messages
       # Proxy and URL Configuration
       - MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
-      - MAUTIC_URL=${MAUTIC_URL}
+      - MAUTIC_URL=https://newsletter.smartoys.be
     depends_on:
       mautic_web:
         condition: service_healthy

@@ -1,92 +1,19 @@
 FROM percona/percona-server:8.0.44
 
-# Detect package manager and install Percona Toolkit
-RUN set -ex; \
-    if command -v apt-get > /dev/null 2>&1; then \
-        # Debian/Ubuntu based
-        export DEBIAN_FRONTEND=noninteractive; \
-        apt-get update; \
-        apt-get install -y --no-install-recommends \
-            wget \
-            gnupg2 \
-            lsb-release \
-            ca-certificates \
-            cron \
-            curl; \
-        wget https://repo.percona.com/apt/percona-release_latest.generic_all.deb; \
-        dpkg -i percona-release_latest.generic_all.deb || true; \
-        apt-get update; \
-        apt-get install -y --no-install-recommends percona-toolkit; \
-        apt-get clean; \
-        rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* percona-release_latest.generic_all.deb; \
-    elif command -v microdnf > /dev/null 2>&1; then \
-        # Oracle Linux / RHEL minimal
-        microdnf install -y \
-            wget \
-            tar \
-            gzip \
-            findutils \
-            procps-ng \
-            cronie \
-            perl \
-            perl-DBI \
-            perl-DBD-MySQL \
-            perl-Time-HiRes \
-            perl-IO-Socket-SSL; \
-        wget https://downloads.percona.com/downloads/percona-toolkit/LATEST/binary/redhat/8/x86_64/percona-toolkit-3.5.7-1.el8.x86_64.rpm; \
-        rpm -ivh percona-toolkit-3.5.7-1.el8.x86_64.rpm; \
-        microdnf clean all; \
-        rm -f percona-toolkit-*.rpm; \
-    elif command -v dnf > /dev/null 2>&1; then \
-        # Oracle Linux / RHEL
-        dnf install -y \
-            wget \
-            tar \
-            gzip \
-            findutils \
-            procps-ng \
-            cronie \
-            perl \
-            perl-DBI \
-            perl-DBD-MySQL \
-            perl-Time-HiRes \
-            perl-IO-Socket-SSL; \
-        wget https://downloads.percona.com/downloads/percona-toolkit/LATEST/binary/redhat/8/x86_64/percona-toolkit-3.5.7-1.el8.x86_64.rpm; \
-        rpm -ivh percona-toolkit-3.5.7-1.el8.x86_64.rpm; \
-        dnf clean all; \
-        rm -f percona-toolkit-*.rpm; \
-    elif command -v yum > /dev/null 2>&1; then \
-        # CentOS / older RHEL
-        yum install -y \
-            wget \
-            tar \
-            gzip \
-            findutils \
-            procps-ng \
-            cronie \
-            perl \
-            perl-DBI \
-            perl-DBD-MySQL \
-            perl-Time-HiRes \
-            perl-IO-Socket-SSL; \
-        wget https://downloads.percona.com/downloads/percona-toolkit/LATEST/binary/redhat/7/x86_64/percona-toolkit-3.5.7-1.el7.x86_64.rpm; \
-        rpm -ivh percona-toolkit-3.5.7-1.el7.x86_64.rpm; \
-        yum clean all; \
-        rm -f percona-toolkit-*.rpm; \
-    else \
-        echo "No supported package manager found!"; \
-        exit 1; \
-    fi
+# Install Percona Toolkit using the official Percona repo method for Oracle Linux
+RUN microdnf install -y wget tar gzip perl findutils procps-ng cronie && \
+    wget https://downloads.percona.com/downloads/percona-toolkit/3.5.7/binary/redhat/8/x86_64/percona-toolkit-3.5.7-1.el8.x86_64.rpm && \
+    rpm -ivh percona-toolkit-3.5.7-1.el8.x86_64.rpm && \
+    microdnf clean all && \
+    rm -f *.rpm
 
 # Copy analysis scripts
 COPY scripts/ /opt/analysis/
 RUN chmod +x /opt/analysis/*.sh
 
 # Create log directories
-RUN mkdir -p /var/log/mysql/analysis
-
-# Ensure cron service can start
-RUN touch /var/log/cron.log
+RUN mkdir -p /var/log/mysql/analysis && \
+    touch /var/log/cron.log
 
 # Copy custom entrypoint
 COPY docker-entrypoint-wrapper.sh /usr/local/bin/

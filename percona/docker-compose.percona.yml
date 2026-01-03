@@ -60,5 +60,5 @@ volumes:
 
 networks:
   mautic-db-network:
+    external: true
     name: ${NETWORK_NAME:-mautic-db-network}
-    driver: bridge

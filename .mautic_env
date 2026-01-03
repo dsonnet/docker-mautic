@@ -4,28 +4,16 @@
 
 # Database Configuration (connects to external percona-db container)
 MAUTIC_DB_HOST=percona-db
-MAUTIC_DB_PORT="${MYSQL_PORT}"
-MAUTIC_DB_DATABASE="${MYSQL_DATABASE}"
-MAUTIC_DB_USER="${MYSQL_USER}"
-MAUTIC_DB_PASSWORD="${MYSQL_PASSWORD}"
+MAUTIC_DB_PORT=3306
+MAUTIC_DB_DATABASE=mautic_smartoys
+MAUTIC_DB_USER=mautic_db_smartoys
+MAUTIC_DB_PASSWORD=ueiMNXmM5uGrsHen
 
 # Message Queue Configuration
 MAUTIC_MESSENGER_DSN_EMAIL=amqp://guest:guest@rabbitmq:5672/mautic/messages
 MAUTIC_MESSENGER_DSN_HIT=amqp://guest:guest@rabbitmq:5672/mautic/messages
 
-
-# Mautic Configuration
+# Proxy and URL Configuration
 MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
 MAUTIC_URL=https://newsletter.smartoys.be
 
-# Optional: Set to 1 to run migrations on startup
-DOCKER_MAUTIC_RUN_MIGRATIONS=1
-
-# Optional: Set to 1 to load test data
-DOCKER_MAUTIC_LOAD_TEST_DATA=0
-
-# RabbitMQ Settings
-RABBITMQ_DEFAULT_VHOST=mautic
-
-# Compose Project Name
-COMPOSE_PROJECT_NAME=mautic-smartoys

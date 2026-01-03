@@ -11,8 +11,8 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
-      - mysql-data:/var/lib/mysql
-      - ./logs:/var/log/mysql
+      - /portainer/mautic-db/data:/var/lib/mysql
+      - /portainer/mautic-db/logs:/var/log/mysql
     ports:
       - "3306:3306"
     command:
@@ -39,9 +39,9 @@ services:
     container_name: percona-toolkit
     restart: unless-stopped
     volumes:
-      - ./logs:/var/log/mysql:ro
-      - ./scripts:/opt/analysis:ro
-      - ./reports:/reports
+      - /portainer/mautic-db/logs:/var/log/mysql:ro
+      - /portainer/mautic-db/scripts:/opt/analysis:ro
+      - /portainer/mautic-db/reports:/reports
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
@@ -53,10 +53,6 @@ services:
     depends_on:
       percona-db:
         condition: service_healthy
-
-volumes:
-  mysql-data:
-    driver: local
 
 networks:
   mautic-db-network:

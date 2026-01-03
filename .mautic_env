@@ -17,4 +17,3 @@ MAUTIC_MESSENGER_DSN_HIT=amqp://guest:guest@rabbitmq:5672/mautic/messages
 MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
 MAUTIC_URL=https://newsletter.smartoys.be
 
-r

@@ -1,36 +1,13 @@
 x-mautic-volumes:
   &mautic-volumes
-  - /mautic/config:/var/www/html/config:z
-  - /mautic/logs:/var/www/html/var/logs:z
-  - /mautic/media/files:/var/www/html/docroot/media/files:z
-  - /mautic/media/images:/var/www/html/docroot/media/images:z
-  - /cron:/opt/mautic/cron:z
-
+  - /portainer/${COMPOSE_PROJECT_NAME}-mautic/config:/var/www/html/config:z
+  - /portainer/${COMPOSE_PROJECT_NAME}-mautic/logs:/var/www/html/var/logs:z
+  - /portainer/${COMPOSE_PROJECT_NAME}-mautic/media/files:/var/www/html/docroot/media/files:z
+  - /portainer/${COMPOSE_PROJECT_NAME}-mautic/media/images:/var/www/html/docroot/media/images:z
+  - /portainer/${COMPOSE_PROJECT_NAME}-cron:/opt/mautic/cron:z
 services:
-  db:
-    image: percona/percona-server:8.0.44
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-    volumes: 
-      - mysql-data:/var/lib/mysql
-    ports:
-      - 3306:3306    
-    command:
-      - --slow_query_log=1
-      - --slow_query_log_file=/var/log/mysql/mysql-slow.log
-      - --long_query_time=1
-      - --sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION          
-    healthcheck:
-      test: mysqladmin --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD ping
-      start_period: 5s
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    networks:
-      - default
+  # Database moved to separate stack - see percona/docker-compose.percona.yml
+  # Start with: cd percona && docker-compose -f docker-compose.percona.yml up -d
 
   rabbitmq:
     image: rabbitmq:3
@@ -43,10 +20,7 @@ services:
 
   mautic_web:
     image: mautic/mautic:6.0.7-apache
-    links:
-      - db:mysql
     volumes: *mautic-volumes
-
     environment:
       - DOCKER_MAUTIC_LOAD_TEST_DATA=${DOCKER_MAUTIC_LOAD_TEST_DATA}
       - DOCKER_MAUTIC_RUN_MIGRATIONS=${DOCKER_MAUTIC_RUN_MIGRATIONS}
@@ -58,12 +32,12 @@ services:
       interval: 5s
       timeout: 5s
       retries: 100
-    depends_on:
-      db:
-        condition: service_healthy
     networks:
       - default
       - web
+      - mautic-db-network
+    external_links:
+      - percona-db:mysql
     labels:
       # Enable Traefik
       - "traefik.enable=true"
@@ -88,8 +62,6 @@ services:
 
   mautic_cron:
     image: mautic/mautic:6.0.7-apache
-    links:
-      - db:mysql
     volumes: *mautic-volumes
     environment:
       - DOCKER_MAUTIC_ROLE=mautic_cron
@@ -100,11 +72,12 @@ services:
         condition: service_healthy
     networks:
       - default
+      - mautic-db-network
+    external_links:
+      - percona-db:mysql
 
   mautic_worker:
     image: mautic/mautic:6.0.7-apache
-    links:
-      - db:mysql
     volumes: *mautic-volumes
     environment:
       - DOCKER_MAUTIC_ROLE=mautic_worker
@@ -115,9 +88,11 @@ services:
         condition: service_healthy
     networks:
       - default
+      - mautic-db-network
+    external_links:
+      - percona-db:mysql
 
 volumes:
-  mysql-data:
   rabbitmq-data:
 
 networks:
@@ -125,3 +100,6 @@ networks:
     name: ${COMPOSE_PROJECT_NAME}-docker
   web:
     external: true
+  mautic-db-network:
+    external: true
+    name: mautic-db-network

@@ -1,0 +1,14 @@
+# Environment files with credentials
+.env.percona
+
+# Log files
+logs/
+*.log
+
+# Backup files
+*.sql
+*.sql.gz
+
+# OS files
+.DS_Store
+Thumbs.db

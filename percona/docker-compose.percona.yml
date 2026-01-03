@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  percona-db:
+    build:
+      context: .
+      dockerfile: Dockerfile.percona
+    container_name: percona-db
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./logs:/var/log/mysql
+      - ./scripts:/opt/analysis:ro
+    ports:
+      - "3306:3306"
+    command:
+      - --slow_query_log=1
+      - --slow_query_log_file=/var/log/mysql/mysql-slow.log
+      - --long_query_time=1
+      - --log_queries_not_using_indexes=1
+      - --log_slow_admin_statements=1
+      - --log_slow_slave_statements=1
+      - --sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+      - --max_connections=200
+      - --innodb_buffer_pool_size=1G
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "$$MYSQL_USER", "-p$$MYSQL_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - mautic-db-network
+
+volumes:
+  mysql-data:
+    driver: local
+
+networks:
+  mautic-db-network:
+    name: ${NETWORK_NAME:-mautic-db-network}
+    driver: bridge

@@ -1,10 +1,10 @@
 x-mautic-volumes:
   &mautic-volumes
-  - /portainer/${COMPOSE_PROJECT_NAME}-mautic/config:/var/www/html/config:z
-  - /portainer/${COMPOSE_PROJECT_NAME}-mautic/logs:/var/www/html/var/logs:z
-  - /portainer/${COMPOSE_PROJECT_NAME}-mautic/media/files:/var/www/html/docroot/media/files:z
-  - /portainer/${COMPOSE_PROJECT_NAME}-mautic/media/images:/var/www/html/docroot/media/images:z
-  - /portainer/${COMPOSE_PROJECT_NAME}-cron:/opt/mautic/cron:z
+  - ./${COMPOSE_PROJECT_NAME}-mautic/config:/var/www/html/config:z
+  - ./${COMPOSE_PROJECT_NAME}-mautic/logs:/var/www/html/var/logs:z
+  - ./${COMPOSE_PROJECT_NAME}-mautic/media/files:/var/www/html/docroot/media/files:z
+  - ./${COMPOSE_PROJECT_NAME}-mautic/media/images:/var/www/html/docroot/media/images:z
+  - ./${COMPOSE_PROJECT_NAME}-cron:/opt/mautic/cron:z
 services:
   # Database moved to separate stack - see percona/docker-compose.percona.yml
   # Start with: cd percona && docker-compose -f docker-compose.percona.yml up -d
@@ -130,3 +130,4 @@ networks:
     external: true
   mautic-db-network:
     external: true
+    name: mautic-db-network

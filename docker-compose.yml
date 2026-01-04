@@ -1,10 +1,10 @@
 x-mautic-volumes:
   &mautic-volumes
-  - ./mautic/config:/var/www/html/config:z
-  - ./mautic/logs:/var/www/html/var/logs:z
-  - ./mautic/media/files:/var/www/html/docroot/media/files:z
-  - ./mautic/media/images:/var/www/html/docroot/media/images:z
-  - ./cron:/opt/mautic/cron:z
+  - /portainer/${COMPOSE_PROJECT_NAME}-mautic/config:/var/www/html/config:z
+  - /portainer/${COMPOSE_PROJECT_NAME}-mautic/logs:/var/www/html/var/logs:z
+  - /portainer/${COMPOSE_PROJECT_NAME}-mautic/media/files:/var/www/html/docroot/media/files:z
+  - /portainer/${COMPOSE_PROJECT_NAME}-mautic/media/images:/var/www/html/docroot/media/images:z
+  - /portainer/${COMPOSE_PROJECT_NAME}-cron:/opt/mautic/cron:z
 services:
   # Database moved to separate stack - see percona/docker-compose.percona.yml
   # Start with: cd percona && docker-compose -f docker-compose.percona.yml up -d
@@ -12,30 +12,30 @@ services:
   rabbitmq:
     image: rabbitmq:3
     environment:
-      - RABBITMQ_DEFAULT_VHOST=mautic
+      - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST}
     volumes: 
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
       - default
 
   mautic_web:
-    image: ghcr.io/smartoys/mautic-stack:6.0.7-apache
+    image: mautic/mautic:5.2.9-apache
     volumes: *mautic-volumes
     environment:
-      - DOCKER_MAUTIC_LOAD_TEST_DATA=false
-      - DOCKER_MAUTIC_RUN_MIGRATIONS=false
+      - DOCKER_MAUTIC_LOAD_TEST_DATA=${DOCKER_MAUTIC_LOAD_TEST_DATA}
+      - DOCKER_MAUTIC_RUN_MIGRATIONS=${DOCKER_MAUTIC_RUN_MIGRATIONS}
       # Database Configuration
       - MAUTIC_DB_HOST=percona-db
       - MAUTIC_DB_PORT=3306
-      - MAUTIC_DB_DATABASE=mautic_smartoys
-      - MAUTIC_DB_USER=mautic_db_smartoys
-      - MAUTIC_DB_PASSWORD=ueiMNXmM5uGrsHen
+      - MAUTIC_DB_DATABASE=${MAUTIC_DB_DATABASE}
+      - MAUTIC_DB_USER=${MAUTIC_DB_USER}
+      - MAUTIC_DB_PASSWORD=${MYSQL_PASSWORD}
       # Message Queue Configuration
       - MAUTIC_MESSENGER_DSN_EMAIL=amqp://guest:guest@rabbitmq:5672/mautic/messages
       - MAUTIC_MESSENGER_DSN_HIT=amqp://guest:guest@rabbitmq:5672/mautic/messages
       # Proxy and URL Configuration
       - MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
-      - MAUTIC_URL=https://newsletter.smartoys.be
+      - MAUTIC_URL=${MAUTIC_URL}
     healthcheck:
       test: curl http://localhost
       start_period: 5s
@@ -69,22 +69,22 @@ services:
       - "traefik.docker.network=web"
 
   mautic_cron:
-    image: ghcr.io/smartoys/mautic-stack:6.0.7-apache
+    image: mautic/mautic:5.2.9-apache
     volumes: *mautic-volumes
     environment:
       - DOCKER_MAUTIC_ROLE=mautic_cron
       # Database Configuration
       - MAUTIC_DB_HOST=percona-db
       - MAUTIC_DB_PORT=3306
-      - MAUTIC_DB_DATABASE=mautic_smartoys
-      - MAUTIC_DB_USER=mautic_db_smartoys
-      - MAUTIC_DB_PASSWORD=ueiMNXmM5uGrsHen
+      - MAUTIC_DB_DATABASE=${MAUTIC_DB_DATABASE}
+      - MAUTIC_DB_USER=${MAUTIC_DB_USER}
+      - MAUTIC_DB_PASSWORD=${MYSQL_PASSWORD}
       # Message Queue Configuration
       - MAUTIC_MESSENGER_DSN_EMAIL=amqp://guest:guest@rabbitmq:5672/mautic/messages
       - MAUTIC_MESSENGER_DSN_HIT=amqp://guest:guest@rabbitmq:5672/mautic/messages
       # Proxy and URL Configuration
       - MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
-      - MAUTIC_URL=https://newsletter.smartoys.be
+      - MAUTIC_URL=${MAUTIC_URL}
     depends_on:
       mautic_web:
         condition: service_healthy
@@ -95,22 +95,22 @@ services:
       - percona-db:mysql
 
   mautic_worker:
-    image: ghcr.io/smartoys/mautic-stack:6.0.7-apache
+    image: mautic/mautic:5.2.9-apache
     volumes: *mautic-volumes
     environment:
       - DOCKER_MAUTIC_ROLE=mautic_worker
       # Database Configuration
       - MAUTIC_DB_HOST=percona-db
       - MAUTIC_DB_PORT=3306
-      - MAUTIC_DB_DATABASE=mautic_smartoys
-      - MAUTIC_DB_USER=mautic_db_smartoys
-      - MAUTIC_DB_PASSWORD=ueiMNXmM5uGrsHen
+      - MAUTIC_DB_DATABASE=${MAUTIC_DB_DATABASE}
+      - MAUTIC_DB_USER=${MAUTIC_DB_USER}
+      - MAUTIC_DB_PASSWORD=${MYSQL_PASSWORD}
       # Message Queue Configuration
       - MAUTIC_MESSENGER_DSN_EMAIL=amqp://guest:guest@rabbitmq:5672/mautic/messages
       - MAUTIC_MESSENGER_DSN_HIT=amqp://guest:guest@rabbitmq:5672/mautic/messages
       # Proxy and URL Configuration
       - MAUTIC_TRUSTED_PROXIES=0.0.0.0/0
-      - MAUTIC_URL=https://newsletter.smartoys.be
+      - MAUTIC_URL=${MAUTIC_URL}
     depends_on:
       mautic_web:
         condition: service_healthy
